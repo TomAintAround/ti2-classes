@@ -12,10 +12,18 @@
       config.allowUnfree = true;
     };
   in {
-    devShells.${system}.default = pkgs.mkShell {
-      packages = with pkgs; [
-        python312
-      ];
-    };
+    devShells.${system}.default = let
+      python =
+        pkgs.python312.withPackages
+        (ps:
+          with ps; [
+            matplotlib
+            numpy
+            sounddevice
+          ]);
+    in
+      pkgs.mkShell {
+        packages = [python];
+      };
   };
 }

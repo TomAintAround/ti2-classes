@@ -17,8 +17,12 @@
         pkgs.python312.withPackages
         (ps:
           with ps; [
+            debugpy
             matplotlib
             numpy
+            openpyxl
+            pandas
+            scipy
             sounddevice
           ]);
     in

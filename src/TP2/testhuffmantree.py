@@ -6,7 +6,7 @@ hft = HuffmanTree()
 verbose = True
 
 # insert new code
-code = "000"		
+code = "000"
 erro = hft.addNode(code, 0, verbose)
 
 # insert code already present
@@ -44,41 +44,39 @@ pos = hft.findNode(code, None, verbose)
 
 
 # search code bit by bit
-def search_bit_by_bit(buffer, verbose=False):
+def searchBitByBit(buffer, verbose=False):
 
-	lv = 0
-	l = len(buffer)
-	terminate = False
-	code = ""
+    lv = 0
+    l = len(buffer)
+    terminate = False
+    code = ""
 
+    while not terminate and lv < l:
 
-	while not terminate and lv < l:
-		
-		nextBit = buffer[lv]
-		code = code + nextBit
-		
-		pos = hft.nextNode(nextBit)
-					
-		if pos != -2:
-			terminate = True
-		else:
-			lv = lv + 1
+        nextBit = buffer[lv]
+        code = code + nextBit
 
-	if verbose:
-		if pos == -1:
-			print("Code '" + buffer + "' not found!!!")
-		elif pos == -2:
-			print("Code '" + buffer + "': not found but prefix!!!")
-		else:
-			print("Code '" + buffer + "' found, alphabet position: " + str(pos) )
+        pos = hft.nextNode(nextBit)
 
-	return pos	
+        if pos != -2:
+            terminate = True
+        else:
+            lv = lv + 1
 
+    if verbose:
+        if pos == -1:
+            print("Code '" + buffer + "' not found!!!")
+        elif pos == -2:
+            print("Code '" + buffer + "': not found but prefix!!!")
+        else:
+            print("Code '" + buffer + "' found, alphabet position: " + str(pos))
+
+    return pos
 
 
 code = "111000100"
-pos = search_bit_by_bit(code, True)
+pos = searchBitByBit(code, True)
 
 
 code = "1110"
-pos = search_bit_by_bit(code, True)
+pos = searchBitByBit(code, True)

@@ -2,12 +2,13 @@
 # Adapted from Java's implementation of Rui Pedro Paiva
 # Teoria da Informacao, LEI, 2022
 
+from io import BufferedReader
 import sys
 from huffmantree import HuffmanTree
 
 
 class GZIPHeader:
-    ''' class for reading and storing GZIP header fields '''
+    """class for reading and storing GZIP header fields"""
 
     ID1 = ID2 = CM = FLG = XFL = OS = 0
     MTIME = []
@@ -23,27 +24,30 @@ class GZIPHeader:
     lenXLEN = 2
 
     # if FLG_FNAME == 1
-    fName = ''  # ends when a byte with value 0 is read
+    fName = ""  # ends when a byte with value 0 is read
 
     # if FLG_FCOMMENT == 1
-    fComment = ''  # ends when a byte with value 0 is read
+    fComment = ""  # ends when a byte with value 0 is read
 
     # if FLG_HCRC == 1
     HCRC = []
 
     def read(self, f):
-        ''' reads and processes the Huffman header from file. Returns 0 if no error, -1 otherwise '''
+        """reads and processes the Huffman header from file. Returns 0 if no error, -1 otherwise"""
 
         # ID 1 and 2: fixed values
         self.ID1 = f.read(1)[0]
-        if self.ID1 != 0x1f: return -1  # error in the header
+        if self.ID1 != 0x1F:
+            return -1  # error in the header
 
         self.ID2 = f.read(1)[0]
-        if self.ID2 != 0x8b: return -1  # error in the header
+        if self.ID2 != 0x8B:
+            return -1  # error in the header
 
         # CM - Compression Method: must be the value 8 for deflate
         self.CM = f.read(1)[0]
-        if self.CM != 0x08: return -1  # error in the header
+        if self.CM != 0x08:
+            return -1  # error in the header
 
         # Flags
         self.FLG = f.read(1)[0]
@@ -81,7 +85,7 @@ class GZIPHeader:
             self.extraField = f.read(self.xlen)
 
         def read_str_until_0(f):
-            s = ''
+            s = ""
             while True:
                 c = f.read(1)[0]
                 if c == 0:
@@ -104,10 +108,10 @@ class GZIPHeader:
 
 
 class GZIP:
-    ''' class for GZIP decompressing file (if compressed with deflate) '''
+    """class for GZIP decompressing file (if compressed with deflate)"""
 
     gzh = None
-    gzFile = ''
+    gzFile = ""
     fileSize = origFileSize = -1
     numBlocks = 0
     f = None
@@ -117,13 +121,13 @@ class GZIP:
 
     def __init__(self, filename):
         self.gzFile = filename
-        self.f = open(filename, 'rb')
+        self.f = open(filename, "rb")
         self.f.seek(0, 2)
         self.fileSize = self.f.tell()
         self.f.seek(0)
 
     def decompress(self):
-        ''' main function for decompressing the gzip file with deflate algorithm '''
+        """main function for decompressing the gzip file with deflate algorithm"""
 
         numBlocks = 0
 
@@ -134,7 +138,7 @@ class GZIP:
         # read GZIP header
         error = self.getHeader()
         if error != 0:
-            print('Formato invalido!')
+            print("Formato invalido!")
             return
 
         # show filename read from GZIP header
@@ -148,7 +152,10 @@ class GZIP:
 
             BTYPE = self.readBits(2)
             if BTYPE != 2:
-                print('Error: Block %d not coded with Huffman Dynamic coding' % (numBlocks + 1))
+                print(
+                    "Error: Block %d not coded with Huffman Dynamic coding"
+                    % (numBlocks + 1)
+                )
                 return
 
             # --- STUDENTS --- ADD CODE HERE
@@ -164,7 +171,7 @@ class GZIP:
         print("End: %d block(s) analyzed." % numBlocks)
 
     def getOrigFileSize(self):
-        ''' reads file size of original file (before compression) - ISIZE '''
+        """reads file size of original file (before compression) - ISIZE"""
 
         # saves current position of file pointer
         fp = self.f.tell()
@@ -183,20 +190,22 @@ class GZIP:
         return sz
 
     def getHeader(self):
-        ''' reads GZIP header'''
+        """reads GZIP header"""
 
         self.gzh = GZIPHeader()
         header_error = self.gzh.read(self.f)
         return header_error
 
     def readBits(self, n, keep=False):
-        ''' reads n bits from bits_buffer. if keep = True, leaves bits in the buffer for future accesses '''
+        """reads n bits from bits_buffer. if keep = True, leaves bits in the buffer for future accesses"""
 
         while n > self.available_bits:
-            self.bits_buffer = self.f.read(1)[0] << self.available_bits | self.bits_buffer
+            self.bits_buffer = (
+                self.f.read(1)[0] << self.available_bits | self.bits_buffer
+            )
             self.available_bits += 8
 
-        mask = (2 ** n) - 1
+        mask = (2**n) - 1
         value = self.bits_buffer & mask
 
         if not keep:
@@ -206,7 +215,7 @@ class GZIP:
         return value
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     # gets filename from command line if provided
     fileName = "FAQ.txt.gz"

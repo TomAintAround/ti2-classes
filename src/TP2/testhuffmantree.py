@@ -50,6 +50,7 @@ def searchBitByBit(buffer, verbose=False):
     l = len(buffer)
     terminate = False
     code = ""
+    pos = 0
 
     while not terminate and lv < l:
 

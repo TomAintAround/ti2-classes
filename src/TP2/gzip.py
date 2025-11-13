@@ -110,11 +110,11 @@ class GZIPHeader:
 class GZIP:
     """class for GZIP decompressing file (if compressed with deflate)"""
 
-    gzh = None
+    gzh: GZIPHeader
     gzFile = ""
     fileSize = origFileSize = -1
     numBlocks = 0
-    f = None
+    f: BufferedReader
 
     bits_buffer = 0
     available_bits = 0

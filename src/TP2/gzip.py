@@ -159,8 +159,17 @@ class GZIP:
                 return
 
             # --- STUDENTS --- ADD CODE HERE
-            #
-            #
+            # 1
+            HLIT, HDIST, HCLEN = self.readFormat()
+            print(f"HLIT: {HLIT}")
+            print(f"HDIST: {HDIST}")
+            print(f"HCLEN: {HCLEN}")
+
+            # 2
+            codesLength = self.codesLengthAlphabet(HCLEN)
+            print(
+                f"Comprimento dos códigos ({len(codesLength)} entradas: {codesLength})"
+            )
 
             # update number of blocks read
             numBlocks += 1
@@ -169,6 +178,40 @@ class GZIP:
 
         self.f.close()
         print("End: %d block(s) analyzed." % numBlocks)
+
+    def readFormat(self):
+        HLIT = self.readBits(5)
+        HDIST = self.readBits(5)
+        HCLEN = self.readBits(4)
+
+        return HLIT, HDIST, HCLEN
+
+    def codesLengthAlphabet(self, HCLEN):
+        order = [
+            16,
+            17,
+            18,
+            0,
+            8,
+            7,
+            9,
+            6,
+            10,
+            5,
+            11,
+            4,
+            12,
+            3,
+            13,
+            2,
+            14,
+            1,
+            15,
+        ]
+        codesLength = [0] * len(order)
+        for i in range(HCLEN + 4):
+            codesLength[order[i]] = self.readBits(3)
+        return codesLength
 
     def getOrigFileSize(self):
         """reads file size of original file (before compression) - ISIZE"""

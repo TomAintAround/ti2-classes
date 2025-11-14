@@ -218,7 +218,7 @@ class GZIP:
 if __name__ == "__main__":
 
     # gets filename from command line if provided
-    fileName = "FAQ.txt.gz"
+    fileName = "src/TP2/FAQ.txt.gz"
     if len(sys.argv) > 1:
         fileName = sys.argv[1]
 

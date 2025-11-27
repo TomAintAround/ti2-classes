@@ -165,7 +165,7 @@ class GZIP:
             print(f"HCLEN: {HCLEN}")
 
             # 2
-            codesLength = self.codesLengthAlphabet(HCLEN)
+            codesLength = self.getCodesLengthAlph(HCLEN)
             print(
                 f"Comprimento dos códigos ({len(codesLength)} entradas): {codesLength}"
             )
@@ -185,7 +185,7 @@ class GZIP:
 
         return HLIT, HDIST, HCLEN
 
-    def codesLengthAlphabet(self, HCLEN):
+    def getCodesLengthAlph(self, HCLEN):
         order = [
             16,
             17,

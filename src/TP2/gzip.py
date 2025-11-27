@@ -167,7 +167,7 @@ class GZIP:
             # 2
             codesLength = self.codesLengthAlphabet(HCLEN)
             print(
-                f"Comprimento dos códigos ({len(codesLength)} entradas: {codesLength})"
+                f"Comprimento dos códigos ({len(codesLength)} entradas): {codesLength}"
             )
 
             # update number of blocks read

@@ -2,7 +2,6 @@
 # Adapted from Java's implementation of Rui Pedro Paiva
 # Teoria da Informacao, LEI, 2022
 
-from io import BufferedReader
 import sys
 from huffmantree import HuffmanTree
 
@@ -110,11 +109,11 @@ class GZIPHeader:
 class GZIP:
     """class for GZIP decompressing file (if compressed with deflate)"""
 
-    gzh: GZIPHeader
+    gzh = None
     gzFile = ""
     fileSize = origFileSize = -1
     numBlocks = 0
-    f: BufferedReader
+    f = None
 
     bits_buffer = 0
     available_bits = 0
@@ -142,7 +141,7 @@ class GZIP:
             return
 
         # show filename read from GZIP header
-        print(self.gzh.fName)
+        print(self.gzh.fName) # pyright: ignore
 
         # MAIN LOOP - decode block by block
         BFINAL = 0
@@ -176,7 +175,7 @@ class GZIP:
 
         # close file
 
-        self.f.close()
+        self.f.close() # pyright: ignore
         print("End: %d block(s) analyzed." % numBlocks)
 
     def readFormat(self):
@@ -217,18 +216,18 @@ class GZIP:
         """reads file size of original file (before compression) - ISIZE"""
 
         # saves current position of file pointer
-        fp = self.f.tell()
+        fp = self.f.tell() # pyright: ignore
 
         # jumps to end-4 position
-        self.f.seek(self.fileSize - 4)
+        self.f.seek(self.fileSize - 4) # pyright: ignore
 
         # reads the last 4 bytes (LITTLE ENDIAN)
         sz = 0
         for i in range(4):
-            sz += self.f.read(1)[0] << (8 * i)
+            sz += self.f.read(1)[0] << (8 * i) # pyright: ignore
 
         # restores file pointer to its original position
-        self.f.seek(fp)
+        self.f.seek(fp) # pyright: ignore
 
         return sz
 
@@ -244,7 +243,7 @@ class GZIP:
 
         while n > self.available_bits:
             self.bits_buffer = (
-                self.f.read(1)[0] << self.available_bits | self.bits_buffer
+                self.f.read(1)[0] << self.available_bits | self.bits_buffer # pyright: ignore
             )
             self.available_bits += 8
 

@@ -56,7 +56,7 @@ class HuffmanTree:
 
         while lv < l and not found:
             # trying to create son of leaf --> error, not prefix code
-            if tmp.index != -1:
+            if tmp.index != -1: # pyright: ignore
                 pos = -2
                 found = True
             else:
@@ -64,10 +64,10 @@ class HuffmanTree:
 
                 if direction == "0":  # LEFT
 
-                    if lv != l - 1 and tmp.left != None:  # keep on going down
-                        tmp = tmp.left
+                    if lv != l - 1 and tmp.left != None:  # keep on going down # pyright: ignore
+                        tmp = tmp.left # pyright: ignore
 
-                    elif tmp.left != None:  # already inserted
+                    elif tmp.left != None:  # already inserted # pyright: ignore
                         pos = -1
                         found = True
 
@@ -78,15 +78,15 @@ class HuffmanTree:
                             index = -1
 
                         hf = HFNode(index, lv + 1)
-                        tmp.left = hf
-                        tmp = tmp.left
+                        tmp.left = hf # pyright: ignore
+                        tmp = tmp.left # pyright: ignore
 
                 elif direction == "1":  # RIGHT
 
-                    if lv != l - 1 and tmp.right != None:  # keep on going down
-                        tmp = tmp.right
+                    if lv != l - 1 and tmp.right != None:  # keep on going down # pyright: ignore
+                        tmp = tmp.right # pyright: ignore
 
-                    elif tmp.right != None:  # already inserted
+                    elif tmp.right != None:  # already inserted # pyright: ignore
                         pos = -1
                         found = True
 
@@ -97,13 +97,13 @@ class HuffmanTree:
                             index = -1
 
                         hf = HFNode(index, lv + 1)
-                        tmp.right = hf
-                        tmp = tmp.right
+                        tmp.right = hf # pyright: ignore
+                        tmp = tmp.right # pyright: ignore
 
             lv += 1
 
         if not found:
-            pos = tmp.index
+            pos = tmp.index # pyright: ignore
 
         if verbose:
             if pos == -1:
@@ -137,14 +137,14 @@ class HuffmanTree:
             direction = s[lv]
 
             if direction == "0":
-                if tmp.left != None:
-                    tmp = tmp.left
+                if tmp.left != None: # pyright: ignore
+                    tmp = tmp.left # pyright: ignore
                 else:
                     found = False
 
             elif direction == "1":
-                if tmp.right != None:
-                    tmp = tmp.right
+                if tmp.right != None: # pyright: ignore
+                    tmp = tmp.right # pyright: ignore
                 else:
                     found = False
 
@@ -152,10 +152,10 @@ class HuffmanTree:
 
         if not found:
             pos = -1
-        elif tmp.index == -1:
+        elif tmp.index == -1: # pyright: ignore
             pos = -2
         else:
-            pos = tmp.index
+            pos = tmp.index # pyright: ignore
 
         if verbose:
             if pos == -1:
@@ -170,12 +170,12 @@ class HuffmanTree:
     def nextNode(self, dir):
         """updates curNode based on the direction dir to descend the tree"""
 
-        if self.curNode.isLeaf():
+        if self.curNode.isLeaf(): # pyright: ignore
             return -1
 
         if dir == "0":
-            if self.curNode.left != None:
-                self.curNode = self.curNode.left
+            if self.curNode.left != None: # pyright: ignore
+                self.curNode = self.curNode.left # pyright: ignore
                 if self.curNode.isLeaf():
                     pos = self.curNode.index
                 else:
@@ -184,8 +184,8 @@ class HuffmanTree:
                 pos = -1
 
         elif dir == "1":
-            if self.curNode.right != None:
-                self.curNode = self.curNode.right
+            if self.curNode.right != None: # pyright: ignore
+                self.curNode = self.curNode.right # pyright: ignore
                 if self.curNode.isLeaf():
                     pos = self.curNode.index
                 else:
@@ -194,4 +194,4 @@ class HuffmanTree:
             else:
                 pos = -1
 
-        return pos
+        return pos # pyright: ignore

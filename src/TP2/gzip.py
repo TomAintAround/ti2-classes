@@ -141,7 +141,7 @@ class GZIP:
             return
 
         # show filename read from GZIP header
-        print(self.gzh.fName) # pyright: ignore
+        print(self.gzh.fName)  # pyright: ignore
 
         # MAIN LOOP - decode block by block
         BFINAL = 0
@@ -175,7 +175,7 @@ class GZIP:
 
         # close file
 
-        self.f.close() # pyright: ignore
+        self.f.close()  # pyright: ignore
         print("End: %d block(s) analyzed." % numBlocks)
 
     def readFormat(self):
@@ -216,18 +216,18 @@ class GZIP:
         """reads file size of original file (before compression) - ISIZE"""
 
         # saves current position of file pointer
-        fp = self.f.tell() # pyright: ignore
+        fp = self.f.tell()  # pyright: ignore
 
         # jumps to end-4 position
-        self.f.seek(self.fileSize - 4) # pyright: ignore
+        self.f.seek(self.fileSize - 4)  # pyright: ignore
 
         # reads the last 4 bytes (LITTLE ENDIAN)
         sz = 0
         for i in range(4):
-            sz += self.f.read(1)[0] << (8 * i) # pyright: ignore
+            sz += self.f.read(1)[0] << (8 * i)  # pyright: ignore
 
         # restores file pointer to its original position
-        self.f.seek(fp) # pyright: ignore
+        self.f.seek(fp)  # pyright: ignore
 
         return sz
 
@@ -243,7 +243,8 @@ class GZIP:
 
         while n > self.available_bits:
             self.bits_buffer = (
-                self.f.read(1)[0] << self.available_bits | self.bits_buffer # pyright: ignore
+                self.f.read(1)[0] << self.available_bits  # pyright: ignore
+                | self.bits_buffer
             )
             self.available_bits += 8
 

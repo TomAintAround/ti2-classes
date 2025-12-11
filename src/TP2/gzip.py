@@ -163,11 +163,11 @@ class GZIP:
 
             # 2
             codesLengthAlph = self.getCodesLengthAlph(HCLEN)
-            print(f"Comprimento dos códigos ({len(codesLengthAlph)} entradas): {codesLengthAlph}")
+            print(f"Comprimento dos códigos do alfabeto: {codesLengthAlph}")
 
             # 3
             codesAlph = self.convertLengths(codesLengthAlph)
-            print(f"Alfabeto dos códigos: {codesAlph}")
+            print(f"Códigos do alfabeto: {codesAlph}")
 
             # Necessário para o 4 e 5
             huffmanTreeCodes = self.buildHuffmanTree(codesAlph)

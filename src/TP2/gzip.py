@@ -162,15 +162,15 @@ class GZIP:
             print(f"HCLEN: {HCLEN}")
 
             # 2
-            codesLength = self.getCodesLengthAlph(HCLEN)
-            print(f"Comprimento dos códigos ({len(codesLength)} entradas): {codesLength}")
+            codesLengthAlph = self.getCodesLengthAlph(HCLEN)
+            print(f"Comprimento dos códigos ({len(codesLengthAlph)} entradas): {codesLengthAlph}")
 
             # 3
-            huffmanLengthCodes = self.convertLengths(codesLength)
-            print(f"Alfabeto de comprimento de códigos: {huffmanLengthCodes}")
+            codesAlph = self.convertLengths(codesLengthAlph)
+            print(f"Alfabeto dos códigos: {codesAlph}")
 
             # Necessário para o 4 e 5
-            huffmanTreeCodes = self.buildHuffmanTree(huffmanLengthCodes)
+            huffmanTreeCodes = self.buildHuffmanTree(codesAlph)
 
             # 4
             codesLengthLit = self.getCodesLengthsGeneral(huffmanTreeCodes, HLIT + 257)

@@ -151,10 +151,7 @@ class GZIP:
 
             BTYPE = self.readBits(2)
             if BTYPE != 2:
-                print(
-                    "Error: Block %d not coded with Huffman Dynamic coding"
-                    % (numBlocks + 1)
-                )
+                print("Error: Block %d not coded with Huffman Dynamic coding" % (numBlocks + 1))
                 return
 
             # --- STUDENTS --- ADD CODE HERE
@@ -166,8 +163,25 @@ class GZIP:
 
             # 2
             codesLength = self.getCodesLengthAlph(HCLEN)
+            print(f"Comprimento dos códigos ({len(codesLength)} entradas): {codesLength}")
+
+            # 3
+            huffmanLengthCodes = self.convertLengths(codesLength)
+            print(f"Alfabeto de comprimento de códigos: {huffmanLengthCodes}")
+
+            # Necessário para o 4 e 5
+            huffmanTreeCodes = self.buildHuffmanTree(huffmanLengthCodes)
+
+            # 4
+            codesLengthLit = self.getCodesLengthsGeneral(huffmanTreeCodes, HLIT + 257)
             print(
-                f"Comprimento dos códigos ({len(codesLength)} entradas): {codesLength}"
+                f"Comprimento dos códigos referentes ao alfabeto de literais/comprimentos: {codesLengthLit}"
+            )
+
+            # 5
+            codesLengthDist = self.getCodesLengthsGeneral(huffmanTreeCodes, HDIST + 1)
+            print(
+                f"Comprimento dos códigos referentes ao alfabeto de distâncias: {codesLengthDist}"
             )
 
             # update number of blocks read
@@ -212,6 +226,58 @@ class GZIP:
             codesLength[order[i]] = self.readBits(3)
         return codesLength
 
+    def convertLengths(self, codesLength):
+        huffmanCodes = [""] * len(codesLength)
+        currValue = 0
+        for length in range(min(x for x in codesLength if x > 0), max(codesLength) + 1):
+            currValue <<= 1
+            for j in range(len(codesLength)):
+                if codesLength[j] != length:
+                    continue
+                huffmanCodes[j] = bin(currValue)[2:]
+                currValue += 1
+
+                if len(huffmanCodes[j]) == length:
+                    continue
+                huffmanCodes[j] = "0" * (length - len(huffmanCodes[j])) + huffmanCodes[j]
+
+        return huffmanCodes
+
+    def buildHuffmanTree(self, huffmanCodes):
+        huffmanTree = HuffmanTree()
+        for i in range(len(huffmanCodes)):
+            if huffmanCodes[i] != "":
+                huffmanTree.addNode(huffmanCodes[i], i)
+        return huffmanTree
+
+    def getCodesLengthsGeneral(self, huffmanTree, totalSize):
+        result = [0] * totalSize
+        currPos = 0
+        while currPos < totalSize:
+            huffmanTree.resetCurNode()
+            # Quando huffmanTree.nextNode() retorna -2, o node atual e uma folha
+            symbol = -2
+            while symbol == -2:
+                symbol = huffmanTree.nextNode(str(self.readBits(1)))
+
+            if symbol >= 0 and symbol <= 15:
+                result[currPos] = symbol
+            elif symbol == 16:
+                repetitions = 3 + self.readBits(2)
+                lastSymbol = result[currPos - 1]
+                for i in range(currPos, currPos + repetitions):
+                    result[i] = lastSymbol
+                currPos += repetitions - 1
+            elif symbol == 17:
+                repetitions = 3 + self.readBits(3)
+                currPos += repetitions - 1
+            elif symbol == 18:
+                repetitions = 11 + self.readBits(7)
+                currPos += repetitions - 1
+            currPos += 1
+
+        return result
+
     def getOrigFileSize(self):
         """reads file size of original file (before compression) - ISIZE"""
 
@@ -243,9 +309,8 @@ class GZIP:
 
         while n > self.available_bits:
             self.bits_buffer = (
-                self.f.read(1)[0] << self.available_bits  # pyright: ignore
-                | self.bits_buffer
-            )
+                self.f.read(1)[0] << self.available_bits | self.bits_buffer
+            )  # pyright: ignore
             self.available_bits += 8
 
         mask = (2**n) - 1

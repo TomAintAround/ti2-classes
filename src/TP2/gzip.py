@@ -200,27 +200,7 @@ class GZIP:
         return HLIT, HDIST, HCLEN
 
     def getCodesLengthAlph(self, HCLEN):
-        order = [
-            16,
-            17,
-            18,
-            0,
-            8,
-            7,
-            9,
-            6,
-            10,
-            5,
-            11,
-            4,
-            12,
-            3,
-            13,
-            2,
-            14,
-            1,
-            15,
-        ]
+        order = [16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15]
         codesLength = [0] * len(order)
         for i in range(HCLEN + 4):
             codesLength[order[i]] = self.readBits(3)

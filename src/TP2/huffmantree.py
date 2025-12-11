@@ -64,9 +64,7 @@ class HuffmanTree:
 
                 if direction == "0":  # LEFT
 
-                    if (
-                        lv != l - 1 and tmp.left != None # pyright: ignore
-                    ):  # keep on going down
+                    if lv != l - 1 and tmp.left != None:  # pyright: ignore  # keep on going down
                         tmp = tmp.left  # pyright: ignore
 
                     elif tmp.left != None:  # already inserted # pyright: ignore
@@ -85,14 +83,10 @@ class HuffmanTree:
 
                 elif direction == "1":  # RIGHT
 
-                    if (
-                        lv != l - 1 and tmp.right != None # pyright: ignore
-                    ):  # keep on going down
+                    if lv != l - 1 and tmp.right != None:  # pyright: ignore  # keep on going down
                         tmp = tmp.right  # pyright: ignore
 
-                    elif (
-                        tmp.right != None # pyright: ignore
-                    ):  # already inserted
+                    elif tmp.right != None:  # pyright: ignore  # already inserted
                         pos = -1
                         found = True
 
@@ -115,9 +109,7 @@ class HuffmanTree:
             if pos == -1:
                 print("Code '" + s + "' already inserted!!!")
             elif pos == -2:
-                print(
-                    "Code '" + s + "' trying to extend leaf - no prefix code!!!"
-                )
+                print("Code '" + s + "' trying to extend leaf - no prefix code!!!")
             else:
                 print("Code '" + s + "' successfully inserted!!!")
 

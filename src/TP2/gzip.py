@@ -289,8 +289,8 @@ class GZIP:
 
         while n > self.available_bits:
             self.bits_buffer = (
-                self.f.read(1)[0] << self.available_bits | self.bits_buffer
-            )  # pyright: ignore
+                self.f.read(1)[0] << self.available_bits | self.bits_buffer  # pyright: ignore
+            )
             self.available_bits += 8
 
         mask = (2**n) - 1

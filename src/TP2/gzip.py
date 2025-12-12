@@ -145,6 +145,7 @@ class GZIP:
 
         # MAIN LOOP - decode block by block
         BFINAL = 0
+        output = list()
         while not BFINAL == 1:
 
             BFINAL = self.readBits(1)
@@ -170,22 +171,37 @@ class GZIP:
             print(f"Códigos do alfabeto: {codesAlph}")
 
             # Necessário para o 4 e 5
-            huffmanTreeCodes = self.buildHuffmanTree(codesAlph)
+            huffmanAlph = self.buildHuffmanTree(codesAlph)
 
             # 4
-            codesLengthLit = self.getCodesLengthsGeneral(huffmanTreeCodes, HLIT + 257)
+            codesLengthLit = self.getCodesLengthsGeneral(huffmanAlph, HLIT + 257)
             print(
                 f"Comprimento dos códigos referentes ao alfabeto de literais/comprimentos: {codesLengthLit}"
             )
 
             # 5
-            codesLengthDist = self.getCodesLengthsGeneral(huffmanTreeCodes, HDIST + 1)
+            codesLengthDist = self.getCodesLengthsGeneral(huffmanAlph, HDIST + 1)
             print(
                 f"Comprimento dos códigos referentes ao alfabeto de distâncias: {codesLengthDist}"
             )
 
+            # 6
+            codesLit = self.convertLengths(codesLengthLit)
+            codesDist = self.convertLengths(codesLengthDist)
+            print(f"Códigos referentes ao alfabeto de literais/comprimentos: {codesLit}")
+            print(f"Códigos referentes ao alfabeto de distâncias: {codesDist}")
+
+            # 7
+            huffmanLit = self.buildHuffmanTree(codesLit)
+            huffmanDist = self.buildHuffmanTree(codesDist)
+            self.decodeBlock(huffmanLit, huffmanDist, output)
+
             # update number of blocks read
             numBlocks += 1
+
+        # 8
+        with open(self.gzh.fName, "wb") as f:  # pyright: ignore
+            f.write(bytes(output))
 
         # close file
 
@@ -230,15 +246,19 @@ class GZIP:
                 huffmanTree.addNode(huffmanCodes[i], i)
         return huffmanTree
 
+    def readHuffman(self, huffmanTree):
+        huffmanTree.resetCurNode()
+        symbol = -2
+        while symbol == -2:
+            symbol = huffmanTree.nextNode(str(self.readBits(1)))
+
+        return symbol
+
     def getCodesLengthsGeneral(self, huffmanTree, totalSize):
         result = [0] * totalSize
         currPos = 0
         while currPos < totalSize:
-            huffmanTree.resetCurNode()
-            # Quando huffmanTree.nextNode() retorna -2, o node atual e uma folha
-            symbol = -2
-            while symbol == -2:
-                symbol = huffmanTree.nextNode(str(self.readBits(1)))
+            symbol = self.readHuffman(huffmanTree)
 
             if symbol >= 0 and symbol <= 15:
                 result[currPos] = symbol
@@ -257,6 +277,48 @@ class GZIP:
             currPos += 1
 
         return result
+
+    def decodeLength(self, symbol):
+        # fmt: off
+        baseLengths = [ 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31,
+                       35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258 ]
+        extraBits = [ 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2,
+                     2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0 ]
+        # fmt: true
+        index = symbol - 257
+        length = baseLengths[index]
+        if extraBits[index] > 0:
+            length += self.readBits(extraBits[index])
+
+        return length
+
+    def decodeDistance(self, symbol):
+        # fmt: off
+        baseDistances = [ 1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385,
+                         513, 769, 1025, 1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577 ]
+        extraBits = [ 0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7,
+                     7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13 ]
+        # fmt: on
+        distance = baseDistances[symbol]
+        if extraBits[symbol] > 0:
+            distance += self.readBits(extraBits[symbol])
+
+        return distance
+
+    def decodeBlock(self, huffmanLit, huffmanDist, output):
+        while True:
+            symbol = self.readHuffman(huffmanLit)
+            if symbol <= 255:
+                output.append(symbol)
+            elif symbol == 256:
+                break
+            else:
+                length = self.decodeLength(symbol)
+                distSymbol = self.readHuffman(huffmanDist)
+                distance = self.decodeDistance(distSymbol)
+                start = len(output) - distance
+                for i in range(length):
+                    output.append(output[start + i])
 
     def getOrigFileSize(self):
         """reads file size of original file (before compression) - ISIZE"""

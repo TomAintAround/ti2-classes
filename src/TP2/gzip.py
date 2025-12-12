@@ -143,9 +143,12 @@ class GZIP:
         # show filename read from GZIP header
         print(self.gzh.fName)  # pyright: ignore
 
+        output = list()
+        interval = min(2**15, self.getOrigFileSize())
+        outputFile = open(self.gzh.fName, "wb")  # pyright: ignore
+
         # MAIN LOOP - decode block by block
         BFINAL = 0
-        output = list()
         while not BFINAL == 1:
 
             BFINAL = self.readBits(1)
@@ -196,12 +199,16 @@ class GZIP:
             huffmanDist = self.buildHuffmanTree(codesDist)
             self.decodeBlock(huffmanLit, huffmanDist, output)
 
+            # 8
+            if len(output) > interval:
+                outputFile.write(bytes(output[: len(output) - interval]))
+                output = output[len(output) - interval :]
+
             # update number of blocks read
             numBlocks += 1
 
-        # 8
-        with open(self.gzh.fName, "wb") as f:  # pyright: ignore
-            f.write(bytes(output))
+        outputFile.write(bytes(output))
+        outputFile.close()
 
         # close file
 
